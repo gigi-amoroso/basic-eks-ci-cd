@@ -9,7 +9,7 @@ resource "helm_release" "aws_load_balancer_controller" {
     yamlencode({
       clusterName = var.eks_cluster_name,
       serviceAccount = {
-        create      = false,
+        create      = true,
         name        = "aws-load-balancer-controller-iam-service-account",
         annotations = {
           "eks.amazonaws.com/role-arn" = var.aws_load_balancer_controller_role_arn
@@ -29,7 +29,7 @@ resource "helm_release" "external_dns" {
   values = [
     yamlencode({
       serviceAccount = {
-        create      = false,
+        create      = true,
         name        = "external-dns-service-account",
         annotations = {
           "eks.amazonaws.com/role-arn" = var.external_dns_role_arn

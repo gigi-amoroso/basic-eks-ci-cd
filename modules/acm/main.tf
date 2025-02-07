@@ -28,8 +28,7 @@ resource "aws_route53_record" "cert_validation" {
   lifecycle {
     ignore_changes = [records]
   }
-}
-
+} 
 resource "aws_acm_certificate_validation" "certificate_validation" {
   certificate_arn         = aws_acm_certificate.certificate.arn
   validation_record_fqdns = [for record in aws_route53_record.cert_validation : record.fqdn]
@@ -38,3 +37,4 @@ resource "aws_acm_certificate_validation" "certificate_validation" {
 output "certificate_arn" {
   value = aws_acm_certificate.certificate.arn
 }
+

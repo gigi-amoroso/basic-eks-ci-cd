@@ -1,5 +1,9 @@
 provider "aws" {
   region = var.aws_region
+  # This tells the AWS provider to assume the TerraformExecutionRole in the target account.
+  assume_role {
+    role_arn = "arn:aws:iam::<acc_id>:role/TerraformExecutionRole"
+  }
 }
 
 data "aws_eks_cluster" "cluster" {

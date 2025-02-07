@@ -61,13 +61,13 @@ variable "private_subnets" {
 variable "domain_name" {
   description = "Domain name for ACM certificate"
   type        = string
-  default     = ""
+  default     = "767397692205.realhandsonlabs.net"
 }
 
 variable "hosted_zone_id" {
   description = "Route53 Hosted Zone ID"
   type        = string
-  default     = ""  # Set your hosted zone ID here
+  default     = "Z01933762MKNQB613NNKG"  # Set your hosted zone ID here
 }
 
 variable "aws_load_balancer_controller_chart_version" {

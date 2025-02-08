@@ -76,19 +76,19 @@ variable "hosted_zone_id" {
 variable "aws_load_balancer_controller_chart_version" {
   description = "Helm chart version for aws-load-balancer-controller"
   type        = string
-  default     = "1.4.4"
+  default     = "1.11.0"
 }
 
 variable "external_dns_chart_version" {
   description = "Helm chart version for external-dns"
   type        = string
-  default     = "1.9.0"
+  default     = "1.15.1"
 }
 
 variable "node_termination_handler_chart_version" {
   description = "Helm chart version for aws-node-termination-handler"
   type        = string
-  default     = "0.16.1"
+  default     = "0.21.0"
 }
 
 variable "external_dns_namespace" {

@@ -31,8 +31,14 @@ module "vpc" {
   enable_nat_gateway = true
   single_nat_gateway = false
 
-  tags = {
-    Name = var.cluster_name
+  public_subnet_tags = {
+    "kubernetes.io/cluster/${var.cluster_name}" = "owned"
+    "kubernetes.io/role/elb"                      = "1"
+  }
+
+  private_subnet_tags = {
+    "kubernetes.io/cluster/${var.cluster_name}"   = "owned"
+    "kubernetes.io/role/internal-elb"               = "1"
   }
 }
 
@@ -49,6 +55,7 @@ module "eks" {
   node_instance_type = var.node_instance_type
   availability_zones = var.availability_zones
   aws_region         = var.aws_region
+  acc_id             = var.acc_id
 }
 
 # IAM roles for IRSA (for AWS Load Balancer Controller and External DNS)
@@ -77,4 +84,5 @@ module "helm" {
   external_dns_chart_version                 = var.external_dns_chart_version
   node_termination_handler_chart_version     = var.node_termination_handler_chart_version
   external_dns_namespace                     = var.external_dns_namespace
+  depends_on = [module.eks]
 }

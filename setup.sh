@@ -93,5 +93,24 @@ done
 
 echo "Finished processing CNAME records."
 
+echo "Assuming role TerraformExecutionRole..."
+ASSUME_ROLE_OUTPUT=$(aws sts assume-role \
+  --role-arn "arn:aws:iam::${ACCOUNT_ID}:role/TerraformExecutionRole" \
+  --role-session-name "TerraformSession" \
+  --duration-seconds 3600)
+
+# Check if the assume-role call was successful
+if [ -z "$ASSUME_ROLE_OUTPUT" ]; then
+  echo "Failed to assume role TerraformExecutionRole."
+  exit 1
+fi
+
+# Extract temporary credentials using jq (make sure jq is installed)
+export AWS_ACCESS_KEY_ID=$(echo "$ASSUME_ROLE_OUTPUT" | jq -r '.Credentials.AccessKeyId')
+export AWS_SECRET_ACCESS_KEY=$(echo "$ASSUME_ROLE_OUTPUT" | jq -r '.Credentials.SecretAccessKey')
+export AWS_SESSION_TOKEN=$(echo "$ASSUME_ROLE_OUTPUT" | jq -r '.Credentials.SessionToken')
+
+echo "Temporary credentials for TerraformExecutionRole have been set."
+
 
 

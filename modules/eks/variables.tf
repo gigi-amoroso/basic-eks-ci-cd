@@ -13,6 +13,11 @@ variable "vpc_id" {
   type        = string
 }
 
+variable "acc_id" {
+  description = "account id"
+  type        = string
+}
+
 variable "private_subnets" {
   description = "List of private subnet IDs for worker nodes"
   type        = list(string)

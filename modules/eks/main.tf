@@ -6,6 +6,10 @@ module "eks" {
   cluster_version = var.kubernetes_version
   vpc_id          = var.vpc_id
   subnet_ids      = var.private_subnets  # use subnet_ids instead of subnets
+  cluster_endpoint_public_access = true
+
+  enable_irsa = true
+  
 
   eks_managed_node_groups = {          # use managed_node_groups instead of node_groups
     eks_nodes = {
@@ -16,12 +20,27 @@ module "eks" {
     }
   }
 
-  enable_irsa = true
-
   tags = {
     Environment = "prod"
     Terraform   = "true"
   }
+}
+
+module "aws_auth" {
+  
+  source = "terraform-aws-modules/eks/aws//modules/aws-auth"
+  version         = "20.33.1"
+  manage_aws_auth_configmap = true
+  aws_auth_accounts = [
+    var.acc_id,
+  ]
+  aws_auth_roles = [
+    {
+      rolearn  = "arn:aws:iam::${var.acc_id}:role/TerraformExecutionRole"
+      username = "TerraformExecutionRole "
+      groups   = ["system:masters"]
+    },
+  ]
 }
 
 

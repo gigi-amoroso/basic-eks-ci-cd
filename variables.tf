@@ -10,6 +10,11 @@ variable "cluster_name" {
   default     = "eks-acg"
 }
 
+variable "acc_id" {
+  description = "account id"
+  type        = string
+}
+
 variable "kubernetes_version" {
   description = "Kubernetes version for the EKS cluster"
   type        = string
@@ -61,13 +66,11 @@ variable "private_subnets" {
 variable "domain_name" {
   description = "Domain name for ACM certificate"
   type        = string
-  default     = ""
 }
 
 variable "hosted_zone_id" {
   description = "Route53 Hosted Zone ID"
   type        = string
-  default     = ""  # Set your hosted zone ID here
 }
 
 variable "aws_load_balancer_controller_chart_version" {

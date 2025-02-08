@@ -7,7 +7,7 @@ module "eks" {
   vpc_id          = var.vpc_id
   subnet_ids      = var.private_subnets  # use subnet_ids instead of subnets
 
-  self_managed_node_groups = {          # use managed_node_groups instead of node_groups
+  eks_managed_node_groups = {          # use managed_node_groups instead of node_groups
     eks_nodes = {
       desired_capacity = var.desired_capacity
       max_capacity     = var.max_capacity
@@ -42,7 +42,7 @@ output "cluster_oidc_issuer_url" {
 }
 
 output "cluster_oidc_issuer_arn" {
-  value = module.eks.cluster_oidc_issuer_url.arn
+  value = module.eks.oidc_provider_arn
 }
 
 output "cluster_id" {

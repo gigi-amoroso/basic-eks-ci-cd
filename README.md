@@ -1,37 +1,51 @@
-Terraform EKS Infrastructure
+# Terraform EKS Infrastructure
 
-    Status: Under Development
+**Status:** Core functionality works; CI/CD setup coming
 
-This repository provisions an Amazon EKS cluster with supporting infrastructure using Terraform. It leverages community modules and custom code to deliver a secure, scalable, and auditable baseline.
-Key Components
+This repository provisions an Amazon EKS cluster with its supporting infrastructure using Terraform. It leverages community modules and custom code to provide a baseline for deploying microservices that can be customized via `variables.tf`.
 
-    VPC & Networking:
-    Uses terraform-aws-modules/vpc/aws to create a VPC with public/private subnets, NAT gateways, and proper subnet tagging.
+## Key Components
 
-    EKS Cluster:
-    Provisions an EKS cluster (via terraform-aws-modules/eks/aws) with managed node groups, IRSA (IAM Roles for Service Accounts), and OIDC support.
+- **VPC & Networking**  
+  Uses [terraform-aws-modules/vpc/aws] to create a VPC with public/private subnets, NAT gateways, and proper subnet tagging for automatic subnet discovery (for the Load Balancer Controller).
 
-    IAM IRSA Roles:
-    Creates IAM roles for AWS Load Balancer Controller and External DNS using a dedicated module based on terraform-aws-modules/iam/aws.
-    Tip: Future enhancements will include centralized service account management for tighter integration.
+- **EKS Cluster**  
+  Provisions an EKS cluster (via [terraform-aws-modules/eks/aws]) with a managed node group and IRSA (IAM Roles for Service Accounts).
 
-    ACM Certificate:
-    Provisions an ACM certificate with DNS validation via Route 53. A valid hosted zone is required.
+- **IAM IRSA Roles**  
+  Creates IAM roles for key Kubernetes add-ons using a dedicated module based on [iam-role-for-service-accounts-eks].
 
-    Helm Releases:
-    Installs key Kubernetes add-ons (AWS LB Controller, External DNS, AWS Node Termination Handler) using a Helm module. Helm charts reference pre‑created service accounts (or, in future, ones managed by Terraform) to ensure consistency.
+- **ACM Certificate**  
+  Provisions an ACM SSL certificate with DNS validation via Route 53 (a valid hosted zone is a prerequisite).
 
-    Setup Script:
-    The setup.sh script retrieves Route 53 hosted zone info, generates generated.auto.tfvars and trust policy files, and creates (if needed) and assumes a TerraformExecutionRole to export temporary credentials.
+- **Helm Releases**  
+  Deploys core Kubernetes add-ons:
+  - **AWS Load Balancer Controller:** Manages AWS ELBs to route external traffic based on created ingresses.
+  - **External DNS:** Automates DNS record management in Route 53.
+  - **AWS Node Termination Handler:** Handles spot instance termination events (important when using spot instances).
 
-How It Works
+- **Setup Script**  
+  The `setup.sh` script retrieves hosted zone info from Route 53, generates `generated.auto.tfvars` and trust policy files, and creates (if needed) and assumes a `TerraformExecutionRole` to export temporary credentials.
 
-    Setup: Run ./setup.sh to auto‑generate required variables, trust policies, and assume a Terraform execution role.
-    Provisioning: Execute terraform init, then terraform plan and terraform apply to create the VPC, EKS cluster, IAM IRSA roles, ACM certificate, and deploy Helm charts.
-    Deployment: Helm charts reference the pre‑configured service accounts (via IRSA) so that add-on deployments remain consistent.
+## How It Works
 
-Prerequisites
+1. **Setup:**  
+   Run `source setup.sh` to generate required variables, trust policies, and assume the Terraform execution role.
 
-    An AWS account with a configured hosted zone (Route 53)
-    AWS CLI, Terraform (>=1.0), kubectl, Helm, and jq installed
-    Appropriate AWS credentials (or a configured AWS profile)
+2. **Provisioning:**  
+   Execute:
+   ```bash
+   terraform init
+   terraform apply
+   ```
+   creates the VPC, EKS cluster, IAM IRSA roles, ACM certificate, and deploys Helm charts.
+
+## Prerequisites
+
+- An AWS account with a configured hosted zone (Route 53)
+- AWS CLI, Terraform (>=1.0), and jq installed  
+
+## Future Enhancements
+
+- Additional features/modules for autoscaling, monitoring, enhanced RBAC, CI/CD integration etc.
+- Production-grade refinements.

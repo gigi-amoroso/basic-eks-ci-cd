@@ -9,7 +9,7 @@ module "eks" {
   cluster_endpoint_public_access = true
 
   enable_irsa = true
-  
+  enable_cluster_creator_admin_permissions = true
 
   eks_managed_node_groups = {          # use managed_node_groups instead of node_groups
     eks_nodes = {
@@ -34,13 +34,7 @@ module "aws_auth" {
   aws_auth_accounts = [
     var.acc_id,
   ]
-  aws_auth_roles = [
-    {
-      rolearn  = "arn:aws:iam::${var.acc_id}:role/TerraformExecutionRole"
-      username = "TerraformExecutionRole "
-      groups   = ["system:masters"]
-    },
-  ]
+  depends_on = [module.eks]
 }
 
 

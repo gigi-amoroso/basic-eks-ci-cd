@@ -46,6 +46,25 @@ module "external_dns_role" {
   }
 }
 
+module "csi_driver_role" {
+  source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
+  version = "5.52.2"
+
+  role_name = "${var.eks_cluster_name}-AmazonEKS_EBS_CSI_DriverRole"
+
+  oidc_providers = {
+    external_dns = {
+      provider_arn               = var.oidc_provider_arn
+      namespace_service_accounts = ["kube-system:aws-ebs-csi-driver-sa"]
+    }
+  }
+
+  # For a managed policy, simply pass the ARN.
+  role_policy_arns = {
+    AmazonRoute53FullAccess = "arn:aws:iam::aws:policy/AmazonEBSCSIDriverPolicy"
+  }
+}
+
 output "aws_load_balancer_controller_role_arn" {
   description = "ARN for the AWS Load Balancer Controller role"
   value       = module.aws_load_balancer_controller_role.iam_role_arn
@@ -54,4 +73,9 @@ output "aws_load_balancer_controller_role_arn" {
 output "external_dns_role_arn" {
   description = "ARN for the External DNS role"
   value       = module.external_dns_role.iam_role_arn
+}
+
+output "csi_driver_role_arn" {
+  description = "ARN for the AWS Load Balancer Controller role"
+  value       = module.csi_driver_role.iam_role_arn
 }

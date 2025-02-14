@@ -45,6 +45,27 @@ resource "helm_release" "external_dns" {
   ]
 }
 
+resource "helm_release" "aws_ebs_csi_driver" {
+  name       = "aws-ebs-csi-driver"
+  namespace  = "kube-system"
+  repository = "https://kubernetes-sigs.github.io/aws-ebs-csi-driver"
+  chart      = "aws-ebs-csi-driver"
+  #version    = var.aws_load_balancer_controller_chart_version
+
+  values = [
+    yamlencode({
+      clusterName = var.eks_cluster_name,
+      serviceAccount = {
+        create      = true,
+        name        = "aws-ebs-csi-driver-sa",
+        annotations = {
+          "eks.amazonaws.com/role-arn" = var.aws_load_balancer_controller_role_arn
+        }
+      }
+    })
+  ]
+}
+
 resource "helm_release" "aws_node_termination_handler" {
   name       = "aws-node-termination-handler"
   namespace  = "kube-system"

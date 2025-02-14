@@ -1,6 +1,6 @@
 # Terraform EKS Infrastructure
 
-**Status:** Core functionality works; CI/CD setup coming
+**Status:** wordpress added for demo, dod rds instance s3 for it ci/cd and appmesh with xray
 
 This repository provisions an Amazon EKS cluster with its supporting infrastructure using Terraform. It leverages community modules and custom code to provide a baseline for deploying microservices that can be customized via `variables.tf`.
 

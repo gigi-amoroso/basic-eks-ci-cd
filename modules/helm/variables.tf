@@ -18,6 +18,11 @@ variable "external_dns_role_arn" {
   type        = string
 }
 
+variable "csi_driver_role_arn" {
+  description = "IAM Role ARN for CSI driver"
+  type        = string
+}
+
 variable "aws_load_balancer_controller_chart_version" {
   description = "Helm chart version for aws-load-balancer-controller"
   type        = string

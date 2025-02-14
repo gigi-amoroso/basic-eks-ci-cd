@@ -11,13 +11,15 @@ module "eks" {
   enable_irsa = true
   enable_cluster_creator_admin_permissions = true
 
-  eks_managed_node_groups = {          # use managed_node_groups instead of node_groups
+  eks_managed_node_groups = {
     eks_nodes = {
-      desired_capacity = var.desired_capacity
-      max_capacity     = var.max_capacity
+      desired_size     = var.desired_capacity  
+      max_size         = var.max_capacity     
+      min_size         = var.desired_capacity
       instance_type    = var.node_instance_type
+      capacity_type    = "SPOT"
       private_ip       = true
-    }
+  }
   }
 
   tags = {
@@ -31,9 +33,14 @@ module "aws_auth" {
   source = "terraform-aws-modules/eks/aws//modules/aws-auth"
   version         = "20.33.1"
   manage_aws_auth_configmap = true
-  aws_auth_accounts = [
-    var.acc_id,
-  ]
+  aws_auth_users = [
+  {
+    userarn  = "arn:aws:iam::${var.acc_id}:user/cloud_user"
+    username = "cloud_user"
+    groups   = ["system:masters"]
+  },
+]
+
   depends_on = [module.eks]
 }
 

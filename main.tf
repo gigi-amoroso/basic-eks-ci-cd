@@ -80,6 +80,7 @@ module "helm" {
   aws_region                                 = var.aws_region
   aws_load_balancer_controller_role_arn      = module.iam_irsa.aws_load_balancer_controller_role_arn
   external_dns_role_arn                      = module.iam_irsa.external_dns_role_arn
+  csi_driver_role_arn                        = module.iam_irsa.csi_driver_role_arn
   aws_load_balancer_controller_chart_version = var.aws_load_balancer_controller_chart_version
   external_dns_chart_version                 = var.external_dns_chart_version
   node_termination_handler_chart_version     = var.node_termination_handler_chart_version

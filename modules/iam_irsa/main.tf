@@ -53,7 +53,7 @@ module "csi_driver_role" {
   role_name = "${var.eks_cluster_name}-AmazonEKS_EBS_CSI_DriverRole"
 
   oidc_providers = {
-    external_dns = {
+    csi_driver = {
       provider_arn               = var.oidc_provider_arn
       namespace_service_accounts = ["kube-system:aws-ebs-csi-driver-sa"]
     }
@@ -61,7 +61,85 @@ module "csi_driver_role" {
 
   # For a managed policy, simply pass the ARN.
   role_policy_arns = {
-    AmazonRoute53FullAccess = "arn:aws:iam::aws:policy/AmazonEBSCSIDriverPolicy"
+    AmazonEBSCSIDriverPolicy = "arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy"
+  }
+}
+
+# Create an IAM policy for the dev database access
+resource "aws_iam_policy" "rds_dev_policy" {
+  name        = "${var.eks_cluster_name}-rds-dev-policy"
+  description = "Policy to allow RDS connection for dev database"
+  policy      = jsonencode({
+    Version   = "2012-10-17",
+    Statement = [
+      {
+        Effect   = "Allow",
+        Action   = [
+          "rds-db:connect"
+        ],
+        Resource = [
+          "arn:aws:rds-db:${var.region}:${var.acc_id}:dbuser:${var.rds_resource_ids["dev"]}/${var.db_user}"
+        ]
+      }
+    ]
+  })
+}
+
+resource "aws_iam_policy" "rds_prod_policy" {
+  name        = "${var.eks_cluster_name}-rds-prod-policy"
+  description = "Policy to allow RDS connection for prod database"
+  policy      = jsonencode({
+    Version   = "2012-10-17",
+    Statement = [
+      {
+        Effect   = "Allow",
+        Action   = [
+          "rds-db:connect"
+        ],
+        Resource = [
+          "arn:aws:rds-db:${var.region}:${var.acc_id}:dbuser:${var.rds_resource_ids["prod"]}/${var.db_user}"
+        ]
+      }
+    ]
+  })
+}
+
+module "rds_dev_sa" {
+  source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
+  version = "5.52.2"
+
+  role_name = "${var.eks_cluster_name}-rds-dev-sa"
+
+  oidc_providers = {
+    rds_dev = {
+      provider_arn               = var.oidc_provider_arn
+      # Format: "namespace:serviceaccount-name"
+      namespace_service_accounts = ["wordpress-dev:wordpress-rds-dev-sa"]
+    }
+  }
+
+  # Attach the dev RDS access policy
+  role_policy_arns = {
+    rds_dev = aws_iam_policy.rds_dev_policy.arn
+  }
+}
+
+module "rds_prod_sa" {
+  source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
+  version = "5.52.2"
+
+  role_name = "${var.eks_cluster_name}-rds-prod-sa"
+
+  oidc_providers = {
+    rds_prod = {
+      provider_arn               = var.oidc_provider_arn
+      namespace_service_accounts = ["wordpress-prod:wordpress-rds-prod-sa"]
+    }
+  }
+
+  # Attach the prod RDS access policy
+  role_policy_arns = {
+    rds_prod = aws_iam_policy.rds_prod_policy.arn
   }
 }
 

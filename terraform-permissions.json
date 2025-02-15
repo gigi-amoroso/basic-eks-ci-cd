@@ -25,6 +25,9 @@
 				"kms:CreateAlias",
 				"kms:ListAliases",
 				"kms:GetKeyPolicy",
+				"kms:GetKeyRotationStatus",
+				"kms:ListResourceTags",
+				"kms:PutKeyPolicy",
 				"kms:DeleteAlias"
 			],
 			"Resource": "*"
@@ -38,6 +41,7 @@
 				"iam:GetInstanceProfile",
 				"iam:AddRoleToInstanceProfile",
 				"iam:RemoveRoleFromInstanceProfile",
+				"iam:ListInstanceProfilesForRole",
 				"iam:DeleteInstanceProfile"
 			],
 			"Resource": "*"
@@ -55,6 +59,20 @@
 			],
 			"Resource": "*"
 		},
+		{
+			"Effect": "Allow",
+			"Action": [
+				"rds:*"
+			],
+			"Resource": "*"
+		  },
+		{
+			"Effect": "Allow",
+			"Action": [
+				"s3:*"
+			],
+			"Resource": "*"
+			},
 		{
 			"Sid": "IAMReadAndManagement",
 			"Effect": "Allow",
@@ -174,6 +192,9 @@
 				"ec2:CreateNatGateway",
 				"ec2:DeleteNatGateway",
 				"ec2:CreateRoute",
+				"ec2:DisassociateRouteTable",
+				"ec2:DescribeNetworkInterfaces",
+				"ec2:DeleteRoute",
 				"ec2:DescribeNatGateways"
 			],
 			"Resource": "*"

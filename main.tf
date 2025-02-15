@@ -1,5 +1,5 @@
 terraform {
-  required_version = ">= 1.0"
+  required_version = ">= 1.10"
   required_providers {
     aws = {
       source  = "hashicorp/aws"
@@ -14,6 +14,12 @@ terraform {
       version = "3.0.0-pre1"
     }
   }
+}
+
+data "aws_caller_identity" "current" {}
+
+output "caller_identity" {
+  value = data.aws_caller_identity.current
 }
 
 # Create a VPC (using the community VPC module)
@@ -62,7 +68,10 @@ module "eks" {
 module "iam_irsa" {
   source            = "./modules/iam_irsa"
   eks_cluster_name  = var.cluster_name # Here you pass your root variable (for example, var.cluster_name)
+  acc_id = var.acc_id
+  db_user = var.db_username
   oidc_provider_arn = module.eks.cluster_oidc_issuer_arn
+  rds_resource_ids = local.rds_resource_ids
 }
 
 
@@ -86,4 +95,22 @@ module "helm" {
   node_termination_handler_chart_version     = var.node_termination_handler_chart_version
   external_dns_namespace                     = var.external_dns_namespace
   depends_on = [module.eks]
+}
+
+module "rds" {
+  for_each = local.environments
+  source   = "./modules/rds"
+  environment       = each.key
+  db_name           = each.value.db_name
+  db_username       = var.db_username
+  db_password       = var.db_password
+  vpc_id            = module.vpc.vpc_id
+  private_subnets   = module.vpc.private_subnets
+  eks_cluster_cidr  = var.vpc_cidr
+}
+
+module "s3" {
+  for_each = local.environments
+  source   = "./modules/s3"
+  bucket_name = "${var.s3_bucket_base}-${each.value.s3_suffix}"
 }

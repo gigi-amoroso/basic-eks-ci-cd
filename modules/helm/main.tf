@@ -53,17 +53,19 @@ resource "helm_release" "aws_ebs_csi_driver" {
   #version    = var.aws_load_balancer_controller_chart_version
 
   values = [
-    yamlencode({
-      clusterName = var.eks_cluster_name,
+  yamlencode({
+    clusterName = var.eks_cluster_name,
+    controller = {
       serviceAccount = {
         create      = true,
-        name        = "aws-ebs-csi-driver-sa",
+        name        = "aws-ebs-csi-driver-sa",  // same as your working command
         annotations = {
-          "eks.amazonaws.com/role-arn" = var.aws_load_balancer_controller_role_arn
+          "eks.amazonaws.com/role-arn" = var.csi_driver_role_arn
         }
       }
-    })
-  ]
+    }
+  })
+]
 }
 
 resource "helm_release" "aws_node_termination_handler" {

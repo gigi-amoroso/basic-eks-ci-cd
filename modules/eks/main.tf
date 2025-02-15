@@ -7,9 +7,8 @@ module "eks" {
   vpc_id          = var.vpc_id
   subnet_ids      = var.private_subnets  # use subnet_ids instead of subnets
   cluster_endpoint_public_access = true
-
-  enable_irsa = true
   enable_cluster_creator_admin_permissions = true
+  enable_irsa = true
 
   eks_managed_node_groups = {
     eks_nodes = {
@@ -32,16 +31,16 @@ module "aws_auth" {
   
   source = "terraform-aws-modules/eks/aws//modules/aws-auth"
   version         = "20.33.1"
-  manage_aws_auth_configmap = true
+  
   aws_auth_users = [
   {
     userarn  = "arn:aws:iam::${var.acc_id}:user/cloud_user"
     username = "cloud_user"
     groups   = ["system:masters"]
   },
+  
 ]
-
-  depends_on = [module.eks]
+  depends_on = [module.eks.eks_managed_node_groups]
 }
 
 

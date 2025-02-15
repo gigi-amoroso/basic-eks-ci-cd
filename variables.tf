@@ -96,3 +96,22 @@ variable "external_dns_namespace" {
   type        = string
   default     = "kube-system"
 }
+
+variable "db_username" {
+  description = "Database username (same for both envs)"
+  type        = string
+  default     = "admin"
+}
+
+variable "db_password" {
+  description = "Database password (same for both envs)"
+  type        = string
+  default     = "admin123"
+  sensitive   = true
+}
+
+variable "s3_bucket_base" {
+  description = "Base name for S3 buckets; environment suffix will be appended"
+  type        = string
+  default     = "my-wordpress-media"
+}

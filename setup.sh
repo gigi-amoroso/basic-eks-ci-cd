@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+#set -e
 
 # Retrieve the first hosted zone from Route 53.
 echo "Retrieving hosted zone..."

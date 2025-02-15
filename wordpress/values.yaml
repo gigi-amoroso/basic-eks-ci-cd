@@ -115,7 +115,7 @@ wordpressUsername: user
 ## @param wordpressPassword WordPress user password
 ## Defaults to a random 10-character alphanumeric string if not set
 ##
-wordpressPassword: ""
+wordpressPassword: "admin"
 ## @param existingSecret Name of existing secret containing WordPress credentials
 ## NOTE: Must contain key `wordpress-password`
 ## NOTE: When it's set, the `wordpressPassword` parameter is ignored
@@ -619,7 +619,7 @@ ingress:
   enabled: true
   ## @param ingress.pathType Ingress path type
   ##
-  pathType: ImplementationSpecific
+  pathType: Prefix
   ## @param ingress.apiVersion Force Ingress API version (automatically detected if not set)
   ##
   apiVersion: ""
@@ -630,7 +630,7 @@ ingress:
   ingressClassName: ""
   ## @param ingress.hostname Default host for the ingress record. The hostname is templated and thus can contain other variable references.
   ##
-  hostname: #hostname and domain here
+  hostname: wordpress.975050248899.realhandsonlabs.net
   ## @param ingress.path Default path for the ingress record
   ## NOTE: You may need to set this to '/*' in order to use this with ALB ingress controllers
   ##
@@ -948,7 +948,7 @@ volumePermissions:
 serviceAccount:
   ## @param serviceAccount.create Enable creation of ServiceAccount for WordPress pod
   ##
-  create: true
+  create: false
   ## @param serviceAccount.name The name of the ServiceAccount to use.
   ## If not set and create is true, a name is generated using the common.names.fullname template
   ##
@@ -1233,7 +1233,7 @@ mariadb:
   ## @param mariadb.enabled Deploy a MariaDB server to satisfy the applications database requirements
   ## To use an external database set this to false and configure the `externalDatabase.*` parameters
   ##
-  enabled: true
+  enabled: false
   ## @param mariadb.architecture MariaDB architecture. Allowed values: `standalone` or `replication`
   ##
   architecture: standalone

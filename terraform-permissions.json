@@ -42,6 +42,7 @@
 				"iam:AddRoleToInstanceProfile",
 				"iam:RemoveRoleFromInstanceProfile",
 				"iam:ListInstanceProfilesForRole",
+				"iam:CreatePolicyVersion",
 				"iam:DeleteInstanceProfile"
 			],
 			"Resource": "*"
@@ -143,6 +144,7 @@
 				"logs:PutRetentionPolicy",
 				"logs:ListTagsForResource",
 				"logs:DescribeLogStreams",
+				"logs:DeleteLogGroup",
 				"logs:GetLogEvents"
 			],
 			"Resource": "*"
@@ -195,6 +197,7 @@
 				"ec2:DisassociateRouteTable",
 				"ec2:DescribeNetworkInterfaces",
 				"ec2:DeleteRoute",
+				"ec2:DeleteSecurityGroup",
 				"ec2:DescribeNatGateways"
 			],
 			"Resource": "*"

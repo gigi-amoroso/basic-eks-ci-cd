@@ -37,12 +37,24 @@ module "aws_auth" {
     userarn  = "arn:aws:iam::${var.acc_id}:user/cloud_user"
     username = "cloud_user"
     groups   = ["system:masters"]
-  },
-  
+  }, 
 ]
+ /* aws_auth_roles = [
+  {
+      rolearn  = "arn:aws:iam::${var.acc_id}:role/TerraformExecutionRole"
+      username = "TerraformExecutionRole"
+      groups   = ["system:masters"]
+  },
+  ]*/
   depends_on = [module.eks.eks_managed_node_groups]
 }
 
+resource "null_resource" "wait_for_aws_auth" {
+  depends_on = [module.aws_auth]
+}
+output "aws_auth_ready" {
+  value = null_resource.wait_for_aws_auth.id
+}
 
 output "cluster_endpoint" {
   value = module.eks.cluster_endpoint

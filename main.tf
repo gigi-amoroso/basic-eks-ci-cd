@@ -1,18 +1,9 @@
 terraform {
   required_version = ">= 1.10"
   required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "5.86.0"
-    }
-    kubernetes = {
-      source  = "hashicorp/kubernetes"
-      version = "2.35.1"
-    }
-    helm = {
-      source  = "hashicorp/helm"
-      version = "3.0.0-pre1"
-    }
+    aws        = { source = "hashicorp/aws", version = "5.86.0" }
+    kubernetes = { source = "hashicorp/kubernetes", version = "2.35.1" }
+    helm       = { source = "hashicorp/helm", version = "3.0.0-pre1" }
   }
 }
 
@@ -22,33 +13,26 @@ output "caller_identity" {
   value = data.aws_caller_identity.current
 }
 
-# Create a VPC (using the community VPC module)
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "5.18.1"
-
-  name = var.cluster_name
-  cidr = var.vpc_cidr
-
+  name    = var.cluster_name
+  cidr    = var.vpc_cidr
   azs             = var.availability_zones
   public_subnets  = var.public_subnets
   private_subnets = var.private_subnets
-
-  enable_nat_gateway = true
-  single_nat_gateway = false
-
+  enable_nat_gateway  = true
+  single_nat_gateway  = false
   public_subnet_tags = {
     "kubernetes.io/cluster/${var.cluster_name}" = "owned"
     "kubernetes.io/role/elb"                      = "1"
   }
-
   private_subnet_tags = {
     "kubernetes.io/cluster/${var.cluster_name}"   = "owned"
     "kubernetes.io/role/internal-elb"               = "1"
   }
 }
 
-# EKS cluster module (using terraform-aws-modules/eks/aws)
 module "eks" {
   source             = "./modules/eks"
   cluster_name       = var.cluster_name
@@ -64,27 +48,25 @@ module "eks" {
   acc_id             = var.acc_id
 }
 
-# IAM roles for IRSA (for AWS Load Balancer Controller and External DNS)
 module "iam_irsa" {
   source            = "./modules/iam_irsa"
-  eks_cluster_name  = var.cluster_name # Here you pass your root variable (for example, var.cluster_name)
-  acc_id = var.acc_id
-  db_user = var.db_username
+  eks_cluster_name  = var.cluster_name
+  acc_id            = var.acc_id
+  db_user           = var.db_username
   oidc_provider_arn = module.eks.cluster_oidc_issuer_arn
-  rds_resource_ids = local.rds_resource_ids
+  rds_resource_ids  = local.rds_resource_ids
+  s3_bucket_names   = local.s3_bucket_names
+  eks_aws_auth_ready = module.eks.aws_auth_ready
 }
 
-
-# ACM certificate module (using aws_acm_certificate and DNS validation via Route53)
 module "acm" {
   source         = "./modules/acm"
   domain_name    = var.domain_name
   hosted_zone_id = var.hosted_zone_id
 }
 
-# Helm releases for AWS Load Balancer Controller, External DNS, and AWS Node Termination Handler
 module "helm" {
-  source                                     = "./modules/helm"
+  source = "./modules/helm"
   eks_cluster_name                           = var.cluster_name
   aws_region                                 = var.aws_region
   aws_load_balancer_controller_role_arn      = module.iam_irsa.aws_load_balancer_controller_role_arn
@@ -98,19 +80,19 @@ module "helm" {
 }
 
 module "rds" {
-  for_each = local.environments
-  source   = "./modules/rds"
-  environment       = each.key
-  db_name           = each.value.db_name
-  db_username       = var.db_username
-  db_password       = var.db_password
-  vpc_id            = module.vpc.vpc_id
-  private_subnets   = module.vpc.private_subnets
-  eks_cluster_cidr  = var.vpc_cidr
+  for_each         = local.environments
+  source           = "./modules/rds"
+  environment      = each.key
+  db_name          = each.value.db_name
+  db_username      = var.db_username
+  db_password      = var.db_password
+  vpc_id           = module.vpc.vpc_id
+  private_subnets  = module.vpc.private_subnets
+  eks_cluster_cidr = var.vpc_cidr
 }
 
 module "s3" {
-  for_each = local.environments
-  source   = "./modules/s3"
+  for_each    = local.environments
+  source      = "./modules/s3"
   bucket_name = "${var.s3_bucket_base}-${each.value.s3_suffix}"
 }

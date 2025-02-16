@@ -150,7 +150,15 @@ wordpressSkipInstall: false
 ##   @ini_set( 'post_max_size', '128M');
 ##   @ini_set( 'memory_limit', '256M' );
 ##
-wordpressExtraConfigContent: ""
+wordpressExtraConfigContent: |
+  define( 'AS3CF_SETTINGS', serialize( array(
+    'provider'            => 'aws',
+    'use-server-roles'    => true,
+    'bucket'              => getenv('WORDPRESS_AWS_S3_BUCKET'),
+    'region'              => getenv('WORDPRESS_AWS_S3_REGION'),
+    'copy-files'          => true,
+    'rewrite-media-urls'  => true,
+  ) ) );
 ## @param wordpressConfiguration The content for your custom wp-config.php file (advanced feature)
 ## NOTE: This will override configuring WordPress based on environment variables (including those set by the chart)
 ## NOTE: Currently only supported when `wordpressSkipInstall=true`
@@ -630,7 +638,7 @@ ingress:
   ingressClassName: ""
   ## @param ingress.hostname Default host for the ingress record. The hostname is templated and thus can contain other variable references.
   ##
-  hostname: wordpress.975050248899.realhandsonlabs.net
+  hostname: 
   ## @param ingress.path Default path for the ingress record
   ## NOTE: You may need to set this to '/*' in order to use this with ALB ingress controllers
   ##

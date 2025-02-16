@@ -25,3 +25,12 @@ variable "rds_resource_ids" {
   description = "Map of RDS resource IDs keyed by environment"
   type        = map(string)
 }
+
+variable "s3_bucket_names" {
+  description = "bucket names"
+  type        = map(string)
+}
+
+variable "eks_aws_auth_ready" {
+  type = string
+}

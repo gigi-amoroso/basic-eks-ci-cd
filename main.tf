@@ -79,6 +79,12 @@ module "helm" {
   depends_on = [module.eks]
 }
 
+module "ci" {
+  source = "./ci"
+  aws_region = var.aws_region
+  acc_id = var.acc_id
+}
+
 module "rds" {
   for_each         = local.environments
   source           = "./modules/rds"

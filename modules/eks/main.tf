@@ -7,7 +7,7 @@ module "eks" {
   vpc_id          = var.vpc_id
   subnet_ids      = var.private_subnets  # use subnet_ids instead of subnets
   cluster_endpoint_public_access = true
-  enable_cluster_creator_admin_permissions = true
+  #enable_cluster_creator_admin_permissions = true
   enable_irsa = true
 
   eks_managed_node_groups = {
@@ -39,13 +39,13 @@ module "aws_auth" {
     groups   = ["system:masters"]
   }, 
 ]
- /* aws_auth_roles = [
+  aws_auth_roles = [
   {
       rolearn  = "arn:aws:iam::${var.acc_id}:role/TerraformExecutionRole"
       username = "TerraformExecutionRole"
       groups   = ["system:masters"]
   },
-  ]*/
+  ]
   depends_on = [module.eks.eks_managed_node_groups]
 }
 

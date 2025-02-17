@@ -227,6 +227,43 @@
 				"autoscaling:DescribeScalingActivities"
 			],
 			"Resource": "*"
-		}
+		},
+		{
+			"Sid": "CodeCommitManagement",
+			"Effect": "Allow",
+			"Action": [
+			  "codecommit:CreateRepository",
+			  "codecommit:BatchGetRepositories",
+			  "codecommit:GetRepository"
+			],
+			"Resource": "*"
+		  },
+		  {
+			"Sid": "CodeBuildManagement",
+			"Effect": "Allow",
+			"Action": [
+			  "codebuild:BatchGetProjects",
+			  "codebuild:CreateProject",
+			  "codebuild:UpdateProject",
+			  "codebuild:DeleteProject",
+			  "codebuild:StartBuild",
+			  "codebuild:BatchGetBuilds",
+			  "codebuild:ListBuildsForProject"
+			],
+			"Resource": "*"
+		  },
+		  {
+			"Sid": "EventBridgeManagement",
+			"Effect": "Allow",
+			"Action": [
+			  "events:PutRule",
+			  "events:PutTargets",
+			  "events:DescribeRule",
+			  "events:DeleteRule",
+			  "events:RemoveTargets",
+			  "events:ListRules"
+			],
+			"Resource": "*"
+		  }
 	]
 }

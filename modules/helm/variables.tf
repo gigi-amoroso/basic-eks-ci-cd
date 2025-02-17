@@ -8,19 +8,9 @@ variable "aws_region" {
   type        = string
 }
 
-variable "aws_load_balancer_controller_role_arn" {
-  description = "IAM Role ARN for the AWS Load Balancer Controller"
-  type        = string
-}
-
-variable "external_dns_role_arn" {
-  description = "IAM Role ARN for External DNS"
-  type        = string
-}
-
-variable "csi_driver_role_arn" {
-  description = "IAM Role ARN for CSI driver"
-  type        = string
+variable "iam_role_arns" {
+  description = "Map of IAM role ARNs for service accounts"
+  type        = map(string)
 }
 
 variable "aws_load_balancer_controller_chart_version" {
@@ -40,5 +30,14 @@ variable "node_termination_handler_chart_version" {
 
 variable "external_dns_namespace" {
   description = "Namespace for external-dns deployment"
+  type        = string
+}
+
+variable "certificate_arn" {
+  
+}
+
+variable "hostname" {
+  description = "Hostname for the ArgoCD ingress"
   type        = string
 }

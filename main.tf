@@ -57,6 +57,7 @@ module "iam_irsa" {
   rds_resource_ids  = local.rds_resource_ids
   s3_bucket_names   = local.s3_bucket_names
   eks_aws_auth_ready = module.eks.aws_auth_ready
+  repo_name = var.repo_name
 }
 
 module "acm" {
@@ -69,20 +70,14 @@ module "helm" {
   source = "./modules/helm"
   eks_cluster_name                           = var.cluster_name
   aws_region                                 = var.aws_region
-  aws_load_balancer_controller_role_arn      = module.iam_irsa.aws_load_balancer_controller_role_arn
-  external_dns_role_arn                      = module.iam_irsa.external_dns_role_arn
-  csi_driver_role_arn                        = module.iam_irsa.csi_driver_role_arn
+  iam_role_arns                              = module.iam_irsa.iam_role_arns
   aws_load_balancer_controller_chart_version = var.aws_load_balancer_controller_chart_version
   external_dns_chart_version                 = var.external_dns_chart_version
   node_termination_handler_chart_version     = var.node_termination_handler_chart_version
   external_dns_namespace                     = var.external_dns_namespace
+  hostname = var.domain_name
+  certificate_arn = module.acm.certificate_arn
   depends_on = [module.eks]
-}
-
-module "ci" {
-  source = "./ci"
-  aws_region = var.aws_region
-  acc_id = var.acc_id
 }
 
 module "rds" {

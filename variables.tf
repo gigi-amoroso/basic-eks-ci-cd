@@ -115,3 +115,8 @@ variable "s3_bucket_base" {
   type        = string
   default     = "my-wordpress-media"
 }
+
+variable "repo_name" {
+  default = "wordpress-helm-chart"
+  description = "repo name for codecommit"
+}

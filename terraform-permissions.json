@@ -234,6 +234,9 @@
 			"Action": [
 			  "codecommit:CreateRepository",
 			  "codecommit:BatchGetRepositories",
+			  "codecommit:ListBranches",
+			  "codecommit:ListTagsForResource",
+			  "codecommit:DeleteRepository",
 			  "codecommit:GetRepository"
 			],
 			"Resource": "*"

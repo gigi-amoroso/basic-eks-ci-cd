@@ -11,7 +11,7 @@ resource "kubernetes_service_account" "wordpress_rds_dev_sa" {
     name      = "wordpress-rds-dev-sa"
     namespace = "wordpress-dev"
     annotations = {
-      "eks.amazonaws.com/role-arn" = module.rds_dev_sa.iam_role_arn
+      "eks.amazonaws.com/role-arn" = module.iam_roles["rds_dev"].iam_role_arn
     }
   }
   depends_on = [var.eks_aws_auth_ready]
@@ -30,7 +30,7 @@ resource "kubernetes_service_account" "wordpress_rds_prod_sa" {
     name      = "wordpress-rds-prod-sa"
     namespace = "wordpress-prod"
     annotations = {
-      "eks.amazonaws.com/role-arn" = module.rds_prod_sa.iam_role_arn
+      "eks.amazonaws.com/role-arn" = module.iam_roles["rds_prod"].iam_role_arn
     }
   }
   depends_on = [var.eks_aws_auth_ready]

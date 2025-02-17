@@ -34,3 +34,6 @@ variable "s3_bucket_names" {
 variable "eks_aws_auth_ready" {
   type = string
 }
+
+variable "repo_name" {
+}

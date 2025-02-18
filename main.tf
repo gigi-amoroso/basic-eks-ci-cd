@@ -4,6 +4,7 @@ terraform {
     aws        = { source = "hashicorp/aws", version = "5.86.0" }
     kubernetes = { source = "hashicorp/kubernetes", version = "2.35.1" }
     helm       = { source = "hashicorp/helm", version = "3.0.0-pre1" }
+    kubectl = { source  = "gavinbunney/kubectl", version = ">= 1.19.0" }
   }
 }
 
@@ -57,7 +58,24 @@ module "iam_irsa" {
   rds_resource_ids  = local.rds_resource_ids
   s3_bucket_names   = local.s3_bucket_names
   eks_aws_auth_ready = module.eks.aws_auth_ready
-  repo_name = var.repo_name
+  namespace_dev = local.environments.dev.namespace
+  namespace_prod = local.environments.prod.namespace
+  db_password = var.db_password
+  service_account_dev_word = var.service_account_dev_word
+  service_account_prod_word = var.service_account_prod_word
+}
+
+module "argo_files" {
+  source = "./modules/argo_files"
+  rds_addresses = local.rds_addresses
+  db_username = var.db_username
+  dev_db_name = local.environments.dev.db_name
+  prod_db_name = local.environments.prod.db_name
+  domain_name = var.domain_name
+  service_account_dev_word = var.service_account_dev_word
+  service_account_prod_word = var.service_account_prod_word
+  argocd_release_id = module.helm.argocd_release_id #passing variable should be enough to create dependency
+  providers = {kubectl = kubectl}
 }
 
 module "acm" {
@@ -96,4 +114,5 @@ module "s3" {
   for_each    = local.environments
   source      = "./modules/s3"
   bucket_name = "${var.s3_bucket_base}-${each.value.s3_suffix}"
+  wordpress_namespace = each.value.namespace
 }

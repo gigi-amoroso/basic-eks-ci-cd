@@ -33,7 +33,7 @@ resource "aws_db_instance" "wordpress" {
   engine_version       = "11.4"  # adjust as needed
   instance_class       = "db.t4g.micro"
   db_name              = var.db_name
-   identifier          = var.db_name
+  identifier          = var.db_name
   username             = var.db_username
   password             = var.db_password
   parameter_group_name = "default.mariadb11.4"
@@ -47,10 +47,11 @@ resource "aws_db_instance" "wordpress" {
   }
 }
 
-output "endpoint" {
-  description = "The RDS endpoint for the database"
-  value       = aws_db_instance.wordpress.address
+output "rds_addresses" {
+  description = "address"
+  value = aws_db_instance.wordpress.address
 }
+
 
 output "rds_resource_id" {
   description = "The DB instance resource ID for this environment"

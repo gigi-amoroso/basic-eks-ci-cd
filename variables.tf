@@ -120,3 +120,11 @@ variable "repo_name" {
   default = "wordpress-helm-chart"
   description = "repo name for codecommit"
 }
+
+variable "service_account_dev_word" {
+  default = "wordpress-rds-dev-sa"
+}
+
+variable "service_account_prod_word" {
+  default = "wordpress-rds-prod-sa"
+}

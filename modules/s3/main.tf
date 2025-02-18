@@ -38,9 +38,6 @@ resource "aws_s3_bucket_policy" "wordpress_media_policy" {
   })
 }
 
-
-
-
 output "bucket_name" {
   value = aws_s3_bucket.wordpress_media.bucket
 }

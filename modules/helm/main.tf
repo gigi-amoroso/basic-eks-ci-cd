@@ -115,3 +115,8 @@ resource "helm_release" "aws_node_termination_handler" {
     yamlencode({})
   ]
 }
+
+output "argocd_release_id" {
+  description = "The ID of the ArgoCD Helm release"
+  value       = helm_release.argocd.id
+}

@@ -35,5 +35,21 @@ variable "eks_aws_auth_ready" {
   type = string
 }
 
-variable "repo_name" {
+variable "namespace_dev" {
+  type = string
+}
+
+variable "namespace_prod" {
+  type = string
+}
+
+variable "db_password" {
+}
+
+variable "service_account_dev_word" {
+  default = "wordpress-rds-dev-sa"
+}
+
+variable "service_account_prod_word" {
+  default = "wordpress-rds-prod-sa"
 }

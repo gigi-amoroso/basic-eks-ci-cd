@@ -33,6 +33,7 @@ resource "helm_release" "kiali" {
   repository = "https://kiali.org/helm-charts"
   chart      = "kiali-server"
   #version    = var.kiali_version
+  depends_on = [helm_release.istio_base]
   values = [
     yamlencode({
       auth = {
@@ -46,6 +47,7 @@ resource "helm_release" "kiali" {
 }
 
 resource "kubernetes_ingress_v1" "kiali_ingress" {
+  depends_on = [helm_release.istio_base]
   metadata {
     name      = "kiali-ingress"
     namespace = "istio-system"

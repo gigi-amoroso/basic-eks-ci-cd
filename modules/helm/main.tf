@@ -90,7 +90,6 @@ resource "helm_release" "aws_ebs_csi_driver" {
 
   values = [
     yamlencode({
-      clusterName  = var.eks_cluster_name,
       controller = {
         serviceAccount = {
           create      = true,

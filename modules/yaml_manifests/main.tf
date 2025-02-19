@@ -37,18 +37,26 @@ resource "local_file" "argocd_app" {
 }
 
 resource "kubectl_manifest" "wordpress_app_dev" {
-  yaml_body = file("${path.module}/generated/argocd-app-dev.yaml") 
+  yaml_body = local_file.argocd_app["dev"].content 
 }
 
 resource "kubectl_manifest" "wordpress_app_prod" {
-  yaml_body = file("${path.module}/generated/argocd-app-prod.yaml")
+  yaml_body = local_file.argocd_app["prod"].content
 }
 
 data "http" "prometheus_yaml" {
   url = "https://raw.githubusercontent.com/istio/istio/release-1.24/samples/addons/prometheus.yaml"
 }
 
+locals {
+  manifests = split("---", data.http.prometheus_yaml.response_body)
+}
+
 resource "kubectl_manifest" "prometheus" {
-  yaml_body = data.http.prometheus_yaml.response_body
+  for_each = {
+    for idx, manifest in local.manifests :
+    idx => trim(manifest, " \n\t") if manifest != ""
+  }
+  yaml_body = each.value
 }
 

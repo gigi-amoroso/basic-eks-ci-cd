@@ -13,6 +13,6 @@ locals {
   }
 
   rds_resource_ids = { for env, mod in module.rds : env => mod.rds_resource_id }
-  rds_addresses = { for env, mod in module.rds : env => mod.rds_addresses }
+  rds_addresses    = { for env, mod in module.rds : env => mod.rds_addresses }
   s3_bucket_names  = { for env, mod in module.s3 : env => mod.bucket_name }
 }

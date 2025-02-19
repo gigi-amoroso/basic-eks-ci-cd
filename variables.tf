@@ -117,7 +117,7 @@ variable "s3_bucket_base" {
 }
 
 variable "repo_name" {
-  default = "wordpress-helm-chart"
+  default     = "wordpress-helm-chart"
   description = "repo name for codecommit"
 }
 

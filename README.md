@@ -1,51 +1,77 @@
-# Terraform EKS Infrastructure
+# AWS EKS GitOps Bootstrap Infrastructure
 
-**Status:** wordpress added for demo, dod rds instance s3 for it ci/cd and appmesh with xray
+[![Terraform Version](https://img.shields.io/badge/terraform-1.5%2B-blue)](https://terraform.io)
+[![AWS Provider](https://img.shields.io/badge/AWS-Provider-orange)](https://registry.terraform.io/providers/hashicorp/aws/latest/docs)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-This repository provisions an Amazon EKS cluster with its supporting infrastructure using Terraform. It leverages community modules and custom code to provide a baseline for deploying microservices that can be customized via `variables.tf`.
+This Terraform project bootstraps an Amazon EKS cluster and its supporting infrastructure, including networking, IRSA, and essential Kubernetes add-ons. It also provisions S3 buckets and RDS MariaDB instances for both production and development environments, alongside a GitOps/CICD approach for deploying a sample Bitnami WordPress Helm chart.
 
-## Key Components
+> **Note:** This demo assumes that you have already created an AWS Hosted Zone in Route 53.
 
-- **VPC & Networking**  
-  Uses [terraform-aws-modules/vpc/aws] to create a VPC with public/private subnets, NAT gateways, and proper subnet tagging for automatic subnet discovery (for the Load Balancer Controller).
+## 🌟 Overview
+This project automates the creation of:
+- **EKS Cluster:** With managed node groups running on spot instances to optimize costs.
+- **Networking:** A VPC with public/private subnets, NAT gateways, and subnet tagging.
+- **IAM Roles:** An execution role (created by running `source setup.sh`) for Terraform, plus IRSA (IAM Roles for Service Accounts) for Kubernetes add-ons.
+- **Kubernetes Add-ons:**  
+  - **AWS Load Balancer Controller:** Automatically provisions AWS load balancers.  
+  - **External DNS:** Manages DNS records in Route 53 automatically.  
+  - **AWS EBS CSI Driver:** Supports persistent volume claims (required by WordPress).  
+  - **AWS Node Termination Handler:** Manages pod migration gracefully during spot instance interruptions.
+- **Additional Services:**  
+  - **ArgoCD:** Monitors a separate repository ([WordPress Helm chart](https://github.com/gigi-amoroso/wordpress)) and deploys WordPress continuously to dev/prod environments.
+  - **Istio Service Mesh & Kiali:** For service mesh management, telemetry, and enhanced networking observability.
+- **SSL Termination:** An ACM certificate is provisioned for secure traffic.
 
-- **EKS Cluster**  
-  Provisions an EKS cluster (via [terraform-aws-modules/eks/aws]) with a managed node group and IRSA (IAM Roles for Service Accounts).
+## ⚠️ Prerequisites
+1. AWS account with Administrator access
+2. Pre-existing Route53 Hosted Zone
+3. Installed and configured:
+   - AWS CLI 
+   - Terraform
 
-- **IAM IRSA Roles**  
-  Creates IAM roles for key Kubernetes add-ons using a dedicated module based on [iam-role-for-service-accounts-eks].
+## 🚀 Quick Start
 
-- **ACM Certificate**  
-  Provisions an ACM SSL certificate with DNS validation via Route 53 (a valid hosted zone is a prerequisite).
-
-- **Helm Releases**  
-  Deploys core Kubernetes add-ons:
-  - **AWS Load Balancer Controller:** Manages AWS ELBs to route external traffic based on created ingresses.
-  - **External DNS:** Automates DNS record management in Route 53.
-  - **AWS Node Termination Handler:** Handles spot instance termination events (important when using spot instances).
-
-- **Setup Script**  
-  The `setup.sh` script retrieves hosted zone info from Route 53, generates `generated.auto.tfvars` and trust policy files, and creates (if needed) and assumes a `TerraformExecutionRole` to export temporary credentials.
-
-## How It Works
-
-1. **Setup:**  
-   Run `source setup.sh` to generate required variables, trust policies, and assume the Terraform execution role.
-
-2. **Provisioning:**  
-   Execute:
+**Clone repository**:
    ```bash
+   git clone https://github.com/gigi-amoroso/basic-eks-ci-cd.git
+   cd basic-eks-ci-cd
+```
+**Set your environment variables for the AWS CLI**:
+   ```bash
+export AWS_ACCESS_KEY_ID=
+export AWS_SECRET_ACCESS_KEY=
+```
+
+
+**Configure Execution Role and initialize Terraform**:
+   ```bash
+   source source.sh  # Creates TerraformExecutionRole and assumes it
    terraform init
-   terraform apply
-   ```
-   creates the VPC, EKS cluster, IAM IRSA roles, ACM certificate, and deploys Helm charts.
+   terraform apply -auto-approve
+ ```  
 
-## Prerequisites
+**🌐 Access Endpoints**:
+After a successful deployment, you should be able to access:
 
-- An AWS account with a configured hosted zone (Route 53)
-- AWS CLI, Terraform (>=1.0), and jq installed  
+    ArgoCD Dashboard: https://argo.<your-domain>
 
-## Future Enhancements
+    Kiali Dashboard: https://kiali.<your-domain>
 
-- Additional features/modules for autoscaling, monitoring, enhanced RBAC, CI/CD integration etc.
-- Production-grade refinements.
+    Development WordPress: https://dev-wordpress.<your-domain>
+
+    Production WordPress: https://prod-wordpress.<your-domain>
+
+Default ArgoCD credentials (stored in Kubernetes Secret):
+
+    Username: admin
+    Password: kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
+    
+Default WordPress credentials:
+
+    Username: user
+    Password admin
+    
+## ⚠️ Demo Simplification Notice:
+
+This implementation demonstrates core GitOps concepts with ArgoCD, though some simplifications were made. Please note that for a production setup, additional security reviews, automated testing pipelines for commits to both dev and prod branches, and further enhancements would be necessary.

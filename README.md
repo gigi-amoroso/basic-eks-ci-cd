@@ -12,11 +12,11 @@ This Terraform project bootstraps an Amazon EKS cluster and its supporting infra
 This project automates the creation of:
 - **EKS Cluster:** With managed node groups running on spot instances to optimize costs.
 - **Networking:** A VPC with public/private subnets, NAT gateways, and subnet tagging.
-- **IAM Roles:** An execution role (created by running `source setup.sh`) for Terraform, plus IRSA (IAM Roles for Service Accounts) for Kubernetes add-ons.
+- **IAM Roles:** An execution role (created by running `source setup.sh`) for Terraform, plus IRSA setup (IAM Roles for Service Accounts) for Kubernetes add-ons.
 - **Kubernetes Add-ons:**  
   - **AWS Load Balancer Controller:** Automatically provisions AWS load balancers.  
   - **External DNS:** Manages DNS records in Route 53 automatically.  
-  - **AWS EBS CSI Driver:** Supports persistent volume claims (required by WordPress).  
+  - **AWS EBS CSI Driver:** manages the lifecycle of Amazon EBS volumes (required by WordPress).  
   - **AWS Node Termination Handler:** Manages pod migration gracefully during spot instance interruptions.
 - **Additional Services:**  
   - **ArgoCD:** Monitors a separate repository ([WordPress Helm chart](https://github.com/gigi-amoroso/wordpress)) and deploys WordPress continuously to dev/prod environments.
@@ -24,7 +24,7 @@ This project automates the creation of:
 - **SSL Termination:** An ACM certificate is provisioned for secure traffic.
 
 ## ⚠️ Prerequisites
-1. AWS account with Administrator access
+1. AWS account
 2. Pre-existing Route53 Hosted Zone
 3. Installed and configured:
    - AWS CLI 
@@ -55,13 +55,16 @@ export AWS_SECRET_ACCESS_KEY=
 After a successful deployment, you should be able to access:
 
     ArgoCD Dashboard: https://argo.<your-domain>
+![image](https://github.com/user-attachments/assets/18cd7946-6aaa-4faa-b4d2-ea9e5f6f9dd0)
+
 
     Kiali Dashboard: https://kiali.<your-domain>
+![image](https://github.com/user-attachments/assets/9e0ce40b-f66c-4d0b-8185-e428c1154734)
 
     Development WordPress: https://dev-wordpress.<your-domain>
-
     Production WordPress: https://prod-wordpress.<your-domain>
-
+      - Can download plugin like WP Offload Media Lite to offload data to s3 bucket which is already created and should work out of box
+      
 Default ArgoCD credentials (stored in Kubernetes Secret):
 
     Username: admin

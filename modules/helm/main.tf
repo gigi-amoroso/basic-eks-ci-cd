@@ -52,7 +52,7 @@ resource "helm_release" "argocd" {
   chart            = "argo-cd"
   create_namespace = true
   version = "7.8.2"
-
+  depends_on = [helm_release.istiod]
   values = [
     yamlencode({
       server = {

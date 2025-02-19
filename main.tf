@@ -65,8 +65,8 @@ module "iam_irsa" {
   service_account_prod_word = var.service_account_prod_word
 }
 
-module "argo_files" {
-  source = "./modules/argo_files"
+module "yaml_manifests" {
+  source = "./modules/yaml_manifests"
   rds_addresses = local.rds_addresses
   db_username = var.db_username
   dev_db_name = local.environments.dev.db_name
@@ -95,6 +95,7 @@ module "helm" {
   external_dns_namespace                     = var.external_dns_namespace
   hostname = var.domain_name
   certificate_arn = module.acm.certificate_arn
+  domain_name = var.domain_name
   depends_on = [module.eks]
 }
 

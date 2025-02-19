@@ -41,3 +41,13 @@ variable "hostname" {
   description = "Hostname for the ArgoCD ingress"
   type        = string
 }
+
+variable "istio_version" {
+  description = "version of istio"
+  type        = string
+  default = "1.24.3"
+}
+
+variable "domain_name" {
+  description = "domain name"
+}

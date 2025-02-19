@@ -20,6 +20,9 @@ resource "kubernetes_namespace" "wordpress" {
 
   metadata {
     name = each.value.namespace
+    labels = {
+      "istio-injection" = "enabled"
+    }
   }
 
   depends_on = [ var.eks_aws_auth_ready ]

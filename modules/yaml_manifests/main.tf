@@ -44,3 +44,11 @@ resource "kubectl_manifest" "wordpress_app_prod" {
   yaml_body = file("${path.module}/generated/argocd-app-prod.yaml")
 }
 
+data "http" "prometheus_yaml" {
+  url = "https://raw.githubusercontent.com/istio/istio/release-1.24/samples/addons/prometheus.yaml"
+}
+
+resource "kubectl_manifest" "prometheus" {
+  yaml_body = data.http.prometheus_yaml.response_body
+}
+

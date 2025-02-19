@@ -25,6 +25,26 @@ module "eks" {
     Environment = "prod"
     Terraform   = "true"
   }
+
+  node_security_group_additional_rules = {
+    ingress_15017 = {
+      description                   = "Allow traffic on port 15017 for Istio webhook injection"
+      protocol                      = "tcp"
+      from_port                     = 15017
+      to_port                       = 15017
+      type                          = "ingress"  # add this line
+      source_cluster_security_group = true
+    }
+    ingress_15012 = {
+      description                   = "Allow traffic on port 15012 for Istio communication"
+      protocol                      = "tcp"
+      from_port                     = 15012
+      to_port                       = 15012
+      type                          = "ingress"  # add this line
+      source_cluster_security_group = true
+    }
+  }
+
 }
 
 module "aws_auth" {
